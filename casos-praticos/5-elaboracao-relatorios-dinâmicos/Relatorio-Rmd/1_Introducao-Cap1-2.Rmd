@@ -1,0 +1,157 @@
+# Lista de Siglas 
+
+<!-- A lista de siglas é incluída a partir de um arquivo texto externo "lista-siglas.txt"" -->
+
+```{r, echo=FALSE, results='asis',}
+insere_lista_siglas(paste(diretorio_rmd, "lista-siglas.txt", sep = "\\"))
+```
+
+# 1. Sumário Executivo
+
+O presente relatório de auditoria materializa o início de um esforço para tornar a fiscalização dos Regimes Próprios de Previdência Social mais eficiente e tempestiva.
+
+A eficiência decorre do fato de que a fiscalização ocorrerá em todos os 77 RPPS atualmente existentes no Estado (1 RPPS estadual e 76 municipais) e de forma remota, implicando uma redução nas despesas com fiscalização. 
+
+A tempestividade decorre do fato de que as análises serão levadas a efeito em bases de dados que serão periodicamente solicitadas aos RPPS, bem como colhidas na internet. Este fato possibilitará que a gestão dos RPPS possa ser acompanhada com uma frequência maior e acões corretivas tomadas de forma tempestiva em caso de afastamentos do regramento legal.
+
+Deve ser destacado, contudo, que os pontos de controle passíveis de análise pela metodologia de trabalho proposta serão aqueles cuja verificação possa ser feita via análise de dados, ou seja, aqueles pontos que possam ser checados de forma automatizada utilizando cruzamento e análise de dados.
+
+Neste primeiro trabalho, ainda de forma preliminar, os seguintes pontos de controle foram objeto de verificação:
+
+* O RPPS está com seu CRP regular?
+* Quais critérios não foram atendidos pelo RPPS?
+* O RPPS encaminha com regularidade o DAIR, DIPR, DPIN e DRAA ao Ministério da Fazenda?
+* O RPPS está realizando o correto enquadramento de suas aplicações ?
+* O RPPS está realizando aplicações de acordo com os limites estabelecidos pela Resolução CMN nº 3.922/10?
+* O RPPS mantém suas aplicações em fundos de investimento no limite de até 25% do patrimônio líquido dos mesmos?
+
+De posse dos dados adequados estas questões podem ser conferidas de forma rápida para todos os RPPS. 
+
+Pretende-se ampliar o rol de questões a serem verificadas à medida que o acesso aos dados necessários seja viabilizado.
+
+O relatório possui 3 anexos:
+
+* __Anexo 1__ - Elenca o conjunto de critérios que são objeto de verificação pelo Ministério da Fazenda para efeito de emissão do Certificado de Regularidade Previdenciária - CRP;   
+* __Anexo 2__ - Este anexo materializa de forma sintética e individualizada para cada RPPS o resultado da análise realizada. Denominado de **Ficha de Apuração de Inconsistências - RPPS** e emitido para cada RPPS apresenta repostas para cada uma das questões de auditoria acima elencadas;   
+* __Anexo 3__ - Apresenta uma posição quanto a entrega dos arquivos `xml` relativos ao DAIR requisitados aos jurisdicionados para execução desta auditoria. 
+
+
+# 2. Introdução
+
+Este relatório de auditoria de acompanhamento dos Regimes Próprios de Previdência Social - RPPS foi realizado conforme autorização contida no processo TCE-RJ nº 303.296-6/16 (PAAG 2017) e autorizada mediante o Ofício Circular GAP/SGE nº 001, de 17.03.17 (arquivo `Evidencias.pdf`, fl. xx), tendo por objetivo o acompanhamento da gestão dos RPPS municipais e estadual quanto aos seguintes aspectos:
+
+1 - Regularidade do ente quanto ao Certificado de Regularidade Pevidenciária - CRP;  
+2 - Regularidade dos RPPS quanto ao encaminhamento ao Ministério da Fazenda dos seguintes demonstrativos:   
+
+* DRAA (Demonstrativo de Resultados da Avaliação Atuarial);   
+* DAIR (Demonstrativo das Aplicações e Investimentos dos Recursos);   
+* DIPR (Demonstrativo de Informações Previdenciárias e Repasses);   
+* DPIN (Demonstrativo da Política de Investimentos)   
+
+3 - Análise dos dados oriundos do DAIR.     
+
+Esta auditoria se insere numa estratégia de fiscalização onde o uso da tecnologia da informação assume uma posição de destaque em razão de viabilizar a análise de grandes quantidades de dados de forma rápida e efetiva, permitindo ganhos de eficiência ao possibilitar o acompanhamento de todos os RPPS com poucos recursos humanos.
+
+A metodologia de elaboração da auditoria encontra-se em um processo evolutivo, tanto em termos de construção das ferramentas computacionais, quanto em abrangência dos tópicos a serem objeto de acompanhamento. Pretende-se, para o próximo ciclo de acompanhamento, já incluído no PAAG do exercício de 2018, realizar a inclusão dos seguintes tópicos de análise:
+
+* 1. Acompanhamento dos dados do DRAA;
+* 2. Acompanhamento dos dados do DIPR;
+* 3. Aperfeiçoamento da análise dos dados do DAIR^[Inclusão de análises tais como: rentabilidade de ativos, performance dos fundos de investimento etc.];
+* 4. Análise das bases cadastrais utilizadas para elaboração dos relatórios anuais de avaliação atuarial.
+
+O recente lançamento pelo Ministério da Fazenda do Indicador de Situação Previdenciária - ISP (`http://www.previdencia.gov.br/regimes-proprios/indicador-de-situacao-previdenciaria/`) pode também ser um valioso instrumento para auxiliar o direcionamento das ações de fiscalização em conjunto com os dados e informações gerados no âmbito das auditorias de acompanhamento. A figura a seguir, obtida do relatório relativo à apuração do 1º semestre de 2017 (ISP-RPPS-2017-01), evidencia que o Estado do Rio de Janeiro ocupa a 17ª posição, com um ISP médio de 0,494.
+
+
+![Figura 1 - Ranking dos estados com relação ao Indicador de Situação Previdenciária - ISP](../figuras/ranking-isp-estados_copia.png)
+
+Assim, esta auditoria, bem como as demais que se seguirão, devem ser consideradas como instrumentos para auxiliar no direcionamento da atuação desta Coordenadoria ao possibilitar a identificação dos RPPS com maiores riscos.
+
+Também objetiva, em certa medida, criar condições para que as recomendações propostas no artigo **"Materialidade, Relevância e Risco: A Importância Estratégica do Controle Externo dos Regimes Próprios de Previdência Social"** de autoria do Conselheiro Substituto Luiz Henrique Lima, possam ser implementadas, quais sejam:^[_in_ __Controle Externo dos Regimes Próprios de Previdência: Estudos de Ministros e Conselheiros Substitutos dos Tribunais de Contas__, Editora Fórum, 2016]
+
+> ○ Criar, em cada Tribunal de Contas, uma unidade técnica especializada na área de previdência e promover a capacitação de servidores e membros;  
+
+> ○ Utilizar as redes de controle e unidades de inteligência de cada Tribunal de Contas para detecção tempestiva de organizações criminosas atuando junto aos RPPS;  
+
+> ○ Articular as ações dos vários Tribunais de Contas;  
+
+> ○ Buscar maior intercâmbio de informações com a Secretaria de Políticas de Previdência Social do Ministério responsável pela Previdência Social, inclusive com integração de ações de fiscalização;  
+
+> ○ Fomentar o controle social da gestão do RPPS e aprimorar a composição dos conselhos fiscais e deliberativos com participação dos segurados e promoção da capacitação dos conselheiros;  
+
+> ○ Uniformizar a jurisprudência no sentido da __reprovação das contas de gestão de agentes políticos responsáveis pelo não recolhimento tempestivo das contribuições previdenciárias patronais eu descontadas dos servidores ou por outras irregularidades gravíssimas__ (os destaques são nossos).  
+
+Transcreve-se trecho do citado artigo que ilustra com muita propriedade a importância da atuação dos Tribunais de Contas:
+
+> A experiência recente indica que a atuação dos Tribunais de Contas pode propiciar resultados positivos, pois, ao proferir julgamentos pela irregularidade das contas, tende a inibir a reincidência de falhas na gestão, tanto dos RPPS, quanto dos entes patrocinadores.
+
+O autor destaca diversos acórdãos em que as irregularidades de natureza previdenciária foram o principal fator que conduziu à reprovação das contas de gestão.
+
+Na obra citada outro artigo, agora de autoria da Conselheira Substituta Sabrina Nunes Iocken, do TCE-SC, denominado **"Déficit Atuarial: O Desafio no Controle da Gestão"** chama a atenção para o papel preponderante dos Tribunais de Contas no controle da gestão dos RPPS:
+
+> O controle exercido pelos Tribunais de Contas deve assumir um papel indutor na boa gestão de tais verbas, proporcionando a identificação e posterior correção das fragilidades identificadas nos processos gerenciais (...)
+
+Destaca a autora que:
+
+> O Tribunal de Contas de Santa Catarina elegeu a fiscalização dos Regimes Próprios de Previdência Social (RPPS) como uma ação prioritária, enfatizando, sobretudo, _o controle da regularidade_ da constituição das receitas, despesas, bem como da aplicação dos recursos no mercado financeiro, sob o controle do princípio constitucional do equilíbrio financeiro e atuarial, introduzido na Carta Constitucional pela Emenda nº 20/98.
+
+E ainda:
+
+> O monitoramento permanente pelas Cortes de Contas deve ser visto como instrumento propulsor da sustentabilidade atuarial. Esse é o desafio de uma vigilância ativa.
+
+
+Coincidência ou não, o fato é que tanto o estado do Mato Grosso quanto o de Santa Catarina figuram entre os estados com os melhores valores do Indicador de Situação Previdenciária. Mato Grosso ocupando o primeiro lugar e Santa Catarina o terceiro. 
+
+Esta auditoria tem por objetivo trazer os subsidíos necessários para que a análise da gestão dos RPPS, expressa em suas contas anuais, possa ser feita com base em dados atualizados produzidos por instância que detenha expertise em matéria previdenciária.
+
+Oportuno assim trazer à baila as reiteradas decisões do Plenário do TCE-RJ no sentido de que a Secretaria Geral de Controle Externo *"Aperfeiçoe as análises dos RPPS nos processos de contas de governo de município, a fim de que seja possível avaliar com maior profundidade a gestão do sistema de previdência social e apurar sua repercussão nas referidas contas"*. Veja-se, nesse sentido, os votos prolatados nos processos TCE-RJ nº 205.997-5/17, 206.014-6/17 e 211.145-8/17, para citar apenas alguns dos processos contendo esta determinação. 
+
+
+## 2.1. Abrangência da auditoria
+
+Dos 91 municípios jurisdicionados a este Tribunal de Contas, 14 fizeram a opção por não instituir RPPS, são eles: Bom Jesus do Itabapoana, Carapebus, Engenheiro Paulo de Frontin, Rio das Flores, Macuco, Paraty, Porto Real, Quissamã, São Francisco de Itabapoana, Tanguá, Três Rios, Paracambi, Santa Maria Madalena e São José do Vale do Rio Preto.
+
+O município de Guapimirim está com seu Regime Próprio em extinção.
+
+Com isso, tem-se um universo de 77 Regimes Próprios de Previdência sob a jurisdição do TCE-RJ, 76 RPPS municipais e 1 RPPS estadual.
+
+No âmbito desta Coordenadoria e apenas para efeito de planejamento das ações de fiscalização, a gestão dos RPPS foi segregada em quatro grandes áreas denominadas componentes. Assim, tem-se que:
+
+ **Componente 1**: Organização e Funcionamento - Neste componente estão reunidos os pontos de controle relacionados à governança do RPPS;  
+
+**Componente 2**: Caráter Contributivo - Neste componente estão os pontos de controle relacionados à regularidade de repasse das contribuições e dos parcelamentos de débitos;  
+
+**Componente 3**: Investimentos - Neste componente estão os pontos de controle relacionados aos investimentos dos recursos financeiros dos RPPS;  
+
+**Componente 4**: Atuária - Este componente agrega os pontos de controle relacionados aos aspectos atuariais.
+
+Destaca-se, contudo, que neste primeiro relatório apenas serão contempladas questões de auditoria relativas aos componentes 1 e 3. 
+
+## 2.2. Antecedentes 
+
+Em 2013 foram realizadas auditorias em 74 RPPS municipais, contemplando questões de auditoria nos 4 componentes antes mencionados: organização e funcionamento, caráter contributivo, investimentos e atuária.
+
+Em 2015 estas auditorias foram monitoradas e os respectivos relatórios encontram-se em tramitação.
+
+Como resultado desse trabalho foram acumuladas experiências que permitiram o desenvolvimento de metodologia que possibilitasse a realização de algumas verificações sem que houvesse a necessidade do  auditor estar *in loco*.
+
+Para tanto, um aspecto essencial é que **as verificações possam ser realizadas de forma automatizada**, ou seja, via análise dos dados disponibilizados pelo Ministério da Fazenda ou colhidos junto aos jurisdicionados por intermédio de requisição ou questionários. Assim, foram selecionadas as questões de auditoria elencadas no capítulo seguinte para compor este primeiro acompanhamento.
+
+
+## 2.3. Questões de Auditoria
+
+As questões de auditoria objeto de acompanhamento e apresentadas neste relatório são as seguintes:
+
+**Componente Organização e Funcionamento**
+
+* O RPPS está com seu CRP regular?
+* Quais critérios não foram atendidos pelo RPPS?
+* O RPPS encaminha com regularidade o DAIR, DIPR, DPIN e DRAA ao Ministério da Fazenda?
+
+**Componente Investimentos**
+
+* O RPPS está classificando corretamente seus investimento em fundos de investimentos?
+* O RPPS está realizando aplicações de acordo com os limites estabelecidos pela Resolução CMN nº 3.922/10?
+* O RPPS mantém suas aplicações em fundos de investimento no limite de até 25% do patrimônio líquido dos mesmos?
+
+Serão apresentadas visões gerais relativas ao conjunto dos 77 RPPS examinados nos capítulos 4 (CRP), 5 (entrega de relatórios) e 6 (acompanhamento do DAIR). A situação particular de cada RPPS será apresentada no Anexo 02.
+

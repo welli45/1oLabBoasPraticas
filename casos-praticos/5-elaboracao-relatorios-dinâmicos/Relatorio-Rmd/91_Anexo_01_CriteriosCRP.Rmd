@@ -1,0 +1,45 @@
+# Anexo 01 - Critérios avaliados para a emissão do CRP 
+
+```{r}
+#diretorio_rmd <- "L:\\___Auditoria de Acompanhamento\\Relatorio_Automatizado\\Rmd"
+setwd(diretorio_rmd)
+anex1 <- read.delim2("anexo_1.txt", header = FALSE, sep = "|")
+anex1.flxt <- theme_vanilla(regulartable(anex1))
+anex1.flxt <- set_header_labels(anex1.flxt,
+                               V1 = "CRITÉRIO",
+                               V2 = "FUNDAMENTO LEGAL")
+
+def_alinhamento <- fp_par(text.align = "left")
+anex1.flxt <- style(anex1.flxt, pr_p = def_alinhamento, part = "all")
+anex1.flxt <- width(anex1.flxt, width = 3.1496)
+anex1.flxt <- padding(anex1.flxt, j=2, padding.left = 10)
+
+```
+
+`r anex1.flxt`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

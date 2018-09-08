@@ -1,0 +1,73 @@
+---
+output:
+  word_document:
+    reference_docx: v1_Template_Relatorio_Auditoria_TCE-RJ.docx
+    toc: yes
+toc-title: SUMÁRIO
+---
+
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(magrittr)
+library(flextable)
+library(officer)
+library(rmarkdown)
+library(tibble)
+
+options(warn = -1, width=120)
+opts_chunk$set(comment = NA, echo = FALSE)
+
+#Sys.setenv("RSTUDIO_PANDOC" = "C:/pandoc-2.1.1") # Foi criado um arquivo ".Rprofile"
+                                                  # com isso não preciso dessa linha...
+
+# Define o diretório contendo os dados utilizados - alterara para colocar path relativa...
+diretorio_dados <- "F:\\CTO\\_RPPS\\shiny-apps\\rpps-app\\dados"
+diretorio_funcoes_aux <- "F:\\CTO\\_RPPS\\shiny-apps\\rpps-app"
+diretorio_xml_dair <- "F:\\CTO\\_RPPS\\Auditoria\\0. Auditoria de Acompanhamento\\Base_DAIR_2017"
+diretorio_rmd <- "L:\\___Auditoria de Acompanhamento\\Relatorio_Automatizado\\Rmd"
+
+# Carrega funções auxiliares
+source(paste(diretorio_rmd, "funcoes_auxiliares_relatorio.R", sep = "\\")) 
+
+```
+
+```{r intro, child='1_Introducao-Cap1-2.Rmd', eval=T}
+
+``` 
+
+```{r metodologia, child='2_Metodologia-Cap3.Rmd', eval=T}
+
+``` 
+
+```{r validade_crp, child='3_Validade_crp-Cap4.Rmd', eval=T}
+
+``` 
+
+```{r entregas_mtps, child='4_Entrega_relatorios-Cap5.Rmd', eval=T}
+
+``` 
+
+```{r analise_dair, child='5_Acompanhamento_dair-Cap6.Rmd', eval=T}
+
+``` 
+
+```{r conclusao, child='9_Conclusao-Cap7.Rmd', eval=T}
+
+``` 
+
+```{r anexo_1, child='91_Anexo_01_CriteriosCRP.Rmd', eval=T}
+
+``` 
+
+```{r anexo_2, child='92_Anexo_02_Ficha_RPPS.Rmd', eval=F}
+
+``` 
+
+```{r anexo_3, child='93_Anexo_03_Contole_Encaminhamento_XML.Rmd', eval=T}
+
+``` 

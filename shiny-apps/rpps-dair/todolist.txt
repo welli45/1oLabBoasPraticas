@@ -1,0 +1,34 @@
+﻿Versão 2018 do rpps dair:
+
+ - identificar os RPPS que não encaminharam xml do dair apesar de ter feito o encaminhamento ao Ministério da Fazernda;
+ 
+ - [OK]incluir uma coluna com a variação percentual e variação acumulada na tabela da evolução dos
+   ativos garantidores (painel 1);
+   
+ - calcular o retorno da carteira de ativos de cada RPPS;
+ 
+ - fazer um sankei plot (ou gráfico de coordenadas paralelas) dos percentuais aplicados em cada fundo de investimento ou ativo;
+ 
+ - elencar os fundos de investimento com as maiores perdas num período e especificar os entes com valores aplicados nesses fundos com grandes perdas;
+ 
+ - criar um rank dos entes com as maiores evoluções de ativos totais (ou os maiores decréscimos)
+ 
+ - 
+
+
+# Sugestões Aline:
+
+- Concentração por instituição financeira
+- Concentração por tipo de investimento global (renda fixa e renda variável)[em elaboração]
+
+# Sugestões do Eduardo:
+
+- Quando houver novas aplicações em investimentos que no exercício anterior
+  ou nos três meses anteriores  à nova aplicação apresentou desvalorização de 
+  suas cotas
+- Quanto houver novas aplicações em investimentos que estão na lista negra
+  da PREVIC
+- Quando houver novas aplicações em Fundos de Investimentos com pouca alocação de recursos dos RPPS (Fundos de Investimento que possuem menos de 10 investimentos de RPPS a Nivel estadual ou nacional)
+- Quanto houver novas aplicações em valore acima de R$ 1.000.000,00 em Fundos de Investimento não classificados no art. 7o I a ou 7o I, b e fundos de investimento que não constenham no nome as palavras: BB, CAIXA, SICREDI e BRADESCO. 
+- Quando o RPPS apresentar em sua carteira alguma situação de desenquadramento dos limites no mês parametrizado (situação não permitida)
+

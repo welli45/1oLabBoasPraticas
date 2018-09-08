@@ -1,0 +1,194 @@
+# 4. Validade do Certificado de Regularidade Previdenciária
+
+```{r crp_chunk_1}
+setwd(diretorio_dados)
+dados <- readRDS('dados_crp_DtGer_01-12-2017.rds')
+dados$Municipio <- gsub("^Município de | - RJ$", "", dados$Municipio)
+
+dt_ger_dados <- as.Date(comment(dados), "%d/%m/%Y")
+
+# Filtra os municipios com CRP vencidos e não vencidos
+lista_crp_vencidos <- subset(dados, dias < 0 )[, 1:4]
+lista_crp_validos  <- subset(dados, dias >= 0)
+```
+
+## 4.1 Certificado de Regularidade Previdênciária
+
+O Certificado de Regularidade Previdenciária - CRP é um documento fornecido pela Secretaria de Previdência Social do Ministério da Fazenda que atesta o cumprimento dos critérios e exigências estabelecidos na Lei nº 9.717/98 pelo RPPS de um Estado, do Distrito Federal ou de um Município, ou seja, atesta que o ente federativo segue normas de boa gestão de forma a assegurar o pagamento dos benefícios previdenciários aos seus segurados.^[Os critérios e exigências que são objeto de verificação pelo Ministério da Fazenda para emissão do CRP constam do art. 5º da Portaria MTPS nº 204/08 e estão elencados no Anexo 01 deste relatório.]
+
+O CRP foi instituído pelo Decreto nº 3.788/01, sendo regulamentado pela Portaria nº 204/08 que dispõe sobre a emissão do CRP.
+
+O CRP é disponibilizado por meio eletrônico, dispensada a assinatura manual ou aposição de carimbos, contém numeração única e tem validade de 180 dias a contar da data de sua emissão (Portaria nº 204/08, §1º, art. 2º). 
+
+Por força do disposto no art. 28 desta Portaria, o CRP será exigido nos casos de:
+
+**(a)** realização de transferências voluntárias de recursos pela União;^[Com exceção das transferências relativas às ações de educação, saúde e assistência social (§2º do art.4º).]  
+**(b)** celebração de acordos, contratos, convênios ou ajustes;  
+**(c)** concessão de empréstimos, financiamentos, avais e subvenções em geral de órgãos ou entidades da Administração direta e indireta da União;  
+**(d)** liberação de recursos de empréstimos e financiamentos por instituições financeiras federais; e  
+**(e)** pagamento dos valores referentes à compensação previdenciária devidos pelo Regime Geral de Previdência Social – RGPS, em razão do disposto na Lei nº 9.796/99.   
+
+Adicionalmente às restrições acima, também os requerimentos para realização de operações de crédito interno e externo dos Estados, do Distrito Federal e dos Municípios estão sujeitos à verificação de regularidade do CRP nos termos do art. 21, inciso VIII, da Resolução nº 43/01 do Senado Federal.
+
+Como pode ser visto, a situação de irregularidade junto ao CRP acarreta para o ente consequências que podem agravar muito sua situação fiscal.
+
+
+## 4.2 Situação dos entes em relação ao CRP
+
+Neste tópico será apresentada uma visão geral da situação do conjunto dos RPPS municipais e estadual em relação ao CRP.
+
+Na data de `r format(dt_ger_dados, "%d.%m.%y")` existiam `r nrow(lista_crp_vencidos)` RPPS com CRP vencido, o que representa `r paste(round(nrow(lista_crp_vencidos) / nrow(dados) * 100, 2), '%', sep="")` dos RPPS do Estado do Rio de Janeiro.
+
+Esta é uma situação preocupante, visto que a irregularidade junto ao CRP impede o ente (estado ou município) de obter transferências voluntárias junto à União, entre outros impedimentos previstos na Portaria nº 204/08. Esse fato demonstra, também, fragilidades na gestão do RPPS que podem levar à sua deterioração a médio prazo de forma a demandar do ente aportes substanciais de recursos para equilibrar o sistema previdenciário, acarretando uma pressão sobre o Tesouro do ente, utilizando recursos que poderiam ser alocados em outras áreas.
+
+Na tabela a seguir apresenta-se um escalonamento do quantitativo de RPPS em função da quantidade de dias decorridos e a decorrer do vencimento até a data de `r format(dt_ger_dados, "%d.%m.%y")`, que é a data de referência da análise realizada neste capítulo.
+
+```{r crp_chunk_2, echo=FALSE, results='asis'}
+tab <- dados %>%
+  group_by(faixas) %>%
+  summarize(QTD_RPPS = n()) %>%
+  mutate(QTD_RPPS_PCT = round(QTD_RPPS / sum(QTD_RPPS) * 100, 2),
+         QTD_RPPS_ACUM = cumsum(QTD_RPPS),
+         QTD_RPPS_PCT_ACUM = cumsum(QTD_RPPS_PCT))
+
+
+#kable(tab[, c("faixas", "QTD_RPPS", "QTD_RPPS_PCT")],
+#      caption="Tabela 1 - Escalonamento dos entes por tempo de vencimento do CRP")
+
+tab1.flxt <- theme_zebra(regulartable(tab[, c("faixas", "QTD_RPPS", "QTD_RPPS_PCT")]))
+
+tab1.flxt <- set_header_labels(tab1.flxt,
+                               faixas = "FAIXAS",
+                               QTD_RPPS = "QTD RPPS",
+                               QTD_RPPS_PCT = "RPPS (%)")
+
+tab1.flxt <- set_formatter(tab1.flxt,
+                           QTD_RPPS_PCT = function(x) sprintf("%.2f%%", x))
+
+tab1.flxt <- width(tab1.flxt, j=1, width = cm2in(2))
+tab1.flxt <- align(tab1.flxt, j=c(1, 2, 3), align ="left", part = "all")
+
+```
+
+#### Tabela 1 - Escalonamento dos entes por tempo de vencimento do CRP
+
+`r tab1.flxt`
+
+Uma visualização dos dados contidos na tabela acima pode ser vista a seguir:
+
+```{r crp_chunk_3, echo=FALSE, fig.cap="Gráfico 1 - Quantidade de RPPS por faixa de vencimento do CRP"}
+options(repr.plot.width = 5, repr.plot.height = 3) 
+
+ggplot(tab, aes(x=faixas, y=QTD_RPPS)) + 
+       geom_bar(stat='identity', fill='lightgreen') + 
+       geom_text(aes(label=QTD_RPPS), color="blue", vjust = -0.2) +
+       coord_flip() + 
+       ylab("Quantidade de RPPS") +
+       xlab("")
+```
+
+
+## 4.3 Análise dos critérios.
+
+O extrato previdenciário é o documento que explicita a situação do ente em cada um dos critérios objeto de análise pelo Ministério da Fazenda. O ente pode apresentar, para cada critério, um dos seguintes *status*: `Regular`, `Irregular`, `Em análise` e `Decisão Judicial`.
+
+Para os entes com o CRP vencido, não é necessário realizar qualquer análise quanto ao **status** dos critérios, já que a situação registrada no documento não traduz a situação atual. 
+
+Nos itens a seguir, será feita a análise para os RPPS que estão com o CRP dentro do prazo de validade (`r nrow(lista_crp_validos)` RPPS).
+
+
+### 4.3.1 - Decisão judicial
+
+```{r crp_chunk_4, echo=FALSE}
+# Municípios com decisão judicial para algum critério
+
+lista_crp_validos$decisao_judicial <- apply(lista_crp_validos[,5:39], 1, function(x) sum(ifelse(x == 'Decisão Judicial', 1, 0)))
+
+rpps_decisao_judicial <- subset(lista_crp_validos, decisao_judicial != 0)
+
+```
+
+Dos `r nrow(lista_crp_validos)` RPPS com CRP válidos, `r nrow(rpps_decisao_judicial)` estão com ao menos 1 critério com decisão judicial. Os municípios e o quantitativo de critérios em decisão judicial são apresentados a seguir:
+
+
+```{r crp_chunk_5, echo=FALSE, results='asis'}
+rpps_decisao_judicial <- arrange(rpps_decisao_judicial, desc(decisao_judicial))
+
+#kable(rpps_decisao_judicial[,c("Municipio", "decisao_judicial")], row.names=FALSE, #caption="Tabela 2 - Entes com decisão judicial para emissão do CRP")
+
+tab2.flxt <- theme_zebra(regulartable(rpps_decisao_judicial[,c("Municipio", "decisao_judicial")]))
+
+tab2.flxt <- set_header_labels(tab2.flxt,
+                               Municipio = "ENTE",
+                               decisao_judicial = "DECISÃO JUDICIAL")
+
+tab2.flxt <- set_formatter(tab2.flxt,
+                           decisao_judicial = function(x) sprintf("%.0f", x))
+
+tab2.flxt <- align(tab2.flxt, j=1, align="left", part = "all")
+```
+
+#### Tabela 2 - Entes com decisão judicial para emissão do CRP
+
+`r autofit(tab2.flxt)`
+
+A tabela evidencia que 5 RPPS possuem todos os critérios com decisão judicial. Significa dizer que, não obstante o RPPS não esteja regular com suas obrigações junto ao Ministério da Fazenda, conseguiu obter o CRP pela via judicial.
+
+
+```{r, eval=FALSE}
+decisao_judicial <- apply(lista_crp_validos[, c(5:38)], 2, function(x) sum(ifelse(x == 'Decisão Judicial', 1, 0)))
+
+decisao_judicial[is.na(decisao_judicial)] <- 0
+
+dec_jud <- data.frame(CRITERIO=names(decisao_judicial),
+                      QTD=decisao_judicial,
+                      row.names = 1:length(decisao_judicial))
+
+dec_jud <- arrange(dec_jud, desc(QTD))
+```
+
+
+### 4.3.2 - Situação irregular
+
+```{r crp_chunk_6, echo=FALSE}
+# Municipios com critério irregular
+lista_crp_validos$irregular <- apply(lista_crp_validos[,5:39], 1, function(x) sum(ifelse(x == 'Irregular', 1, 0)))
+                                           
+rpps_irregular <- subset(lista_crp_validos, irregular != 0)
+
+```
+
+Dos `r nrow(lista_crp_validos)` RPPS com CRP válido, `r nrow(rpps_irregular)` estão com ao menos 1 critério com o *status* "Irregular". Os entes e o quantitativo de critérios irregulares são apresentados na tabela a seguir:
+
+
+```{r crp_chunk_7, echo=FALSE, results='asis'}
+nomes <- names(rpps_irregular[,5:39]) # ver se da pra trocar o 5:39 por algo mais generico.
+rpps_irregular$criterios <- apply(rpps_irregular[,5:39], 1, function(x) paste0(nomes[x == 'Irregular'], collapse = '-'))
+
+rpps_irregular <- arrange(rpps_irregular, desc(irregular))
+
+#kable(rpps_irregular[,c("Municipio", "irregular")], row.names=FALSE, caption="Tabela 3 - Entes com situação irregular em ao menos um critério")
+
+tab3.flxt <- theme_zebra(regulartable(rpps_irregular[,c("Municipio", "irregular")]))  
+
+tab3.flxt <- set_header_labels(tab3.flxt,
+                               Municipio = "ENTE",
+                               irregular = "IRREGULAR")
+
+tab3.flxt <- set_formatter(tab3.flxt, irregular = function(x) sprintf("%.0f", x))
+tab3.flxt <- align(tab3.flxt, j=1, align="left", part = "all")
+```
+
+#### Tabela 3 - Entes com situação irregular em ao menos um critério
+
+`r autofit(tab3.flxt)`
+
+
+A tabela evidencia que vários municípios estão com situação irregular em algum critério.
+
+No Anexo 02 será apresentada de forma individualizada para cada ente a situação com relação ao CRP, bem como os critérios irregulares e com decisão judicial para os que possuam CRP dentro do prazo de validade.
+
+
+
+
+

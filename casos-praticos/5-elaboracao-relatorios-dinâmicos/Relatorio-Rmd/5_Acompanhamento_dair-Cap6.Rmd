@@ -1,0 +1,154 @@
+# 6. Acompanhamento do DAIR
+
+```{r setup, echo=FALSE}
+setwd(diretorio_dados)
+
+# Base DAIR
+# Todo: converter as variáveis numéricas para número.
+dados_dair <- readRDS("dados_dair_DtGer_12-12-2017.rds")
+dados_dair$ano_mes <- paste(dados_dair$ano, dados_dair$mes, sep = "-")
+
+
+# Base Enquadramento
+enquadramento_fundos <- read_excel("2018-01-09-Planilha-de-enquadramento-dos-Fundos-DIINV-CGACI-SRPPS-2.xlsx", sheet = "Enquadramento dos fundos")
+enquadramento_fundos$CLASSIF_MTPS <- toupper(gsub('[[:punct:]]| |o', '', enquadramento_fundos$`Classificação Padronizada`))
+
+# Base Limites
+limites <- read_excel("limites_cmn.xlsx", sheet="limites_cvm")
+limites$padroniza <- toupper(gsub('[[:punct:]]| |o', '', limites$ATIVO))
+
+
+# Junta as duas bases
+dados_dair <- merge(dados_dair, enquadramento_fundos[,c('CNPJ', 'CLASSIF_MTPS')],
+              by.x='cnpj_fi',
+              by.y='CNPJ',
+              all.x=TRUE)
+
+# Compara os valores - melhorar os nomes das variáveis... (acho que aqui eu devia retirar o que não é fundo de investimento)
+dados_dair$textoFundamentoLegal_pad <- toupper(gsub('[[:punct:]]| |o', '', dados_dair$textoFundamentoLegal))
+dados_dair$teste <- dados_dair$textoFundamentoLegal_pad == dados_dair$CLASSIF_MTPS
+
+# Verifica se há classificação incorreta.
+divergencia_classificacao <- subset(dados_dair, !teste)
+divergencia_classificacao <- split(divergencia_classificacao, f=divergencia_classificacao$ente)
+
+```
+
+Conforme já mencionado no Capítulo 1, o Demonstrativo de Aplicação e Investimento de Recursos - DAIR é de encaminhamento obrigatório à Secretaria de Políticas de Previdência Social do  Ministério da Fazenda por força do disposto no art. 22 da Portaria MF nº 204/08 e evidencia os investimentos realizados pelo RPPS. 
+
+Até a edição da Portaria MF nº 1/17, este demonstrativo evidenciava a posição dos investimentos ao fim do bimestre. Com a edição da referida portaria, a elaboração e entrega do DAIR passou a ser mensal. 
+
+Neste relatório será feita a análise dos dados relativos ao meses de janeiro a agosto de 2017. Para a execução da auditoria foram requisitados, por intermédio do TSID 01 de 09.10.17 (arquivo `Evidencias.pdf` fl. xx), os arquivos `xml` relativos aos DAIR de janeiro a agosto de 2017, dos quais foram extraídos os dados utilizados para análise.
+
+Os dados constam do arquivo `dados_dair_DtGer19-10-2017.rds`. Cabe destacar que nem todas as Unidades Gestoras de RPPS encaminharam os aquivos solicitados. No Anexo 03 faz-se um registro do atendimento à solicitação feita às Unidades Gestoras. 
+
+Os dados utilizados e, por conseguinte, as análises realizadas, não contêm os efeitos das alterações introduzidas pela **Resolução CMN nº 4.604/17**, publicada em 20.10.17, em especial a alteração dos limites de investimento permitidos em cada ativo. Cabe destacar que até que o Ministério da Fazenda promova alterações no CADPREV para se adequar às alterações promovidas, fato que ocorrerá em meados do primeiro trimestre de 2018 (arquivo `Orientação-de-preenchimento-do-DAIR.pdf`, fls.**xx**), os RPPS deverão informar no DAIR as suas aplicações sem considerar as alterações advindas da Resolução CMN nº 4.604/17.
+
+Neste capítulo, as verificações que serão levadas a efeito são as seguintes:
+
+* O RPPS enquadrou os fundos de investimento de acordo com a Resolução nº 3.922/10 do CMN?
+* O RPPS aplicou seus recursos observando os limites estabelecidos na Resolução nº 3.922/10 do CMN?
+* O RPPS mantém suas aplicações em fundos de investimento no limite de até 25% do patrimônio líquido dos mesmos?
+
+
+## 6.1 Enquadramento dos Fundos de Investimento
+
+Esta verificação foi realizada confrontando-se o enquadramento realizado pelo RPPS quando da elaboração do DAIR com o enquadramento realizado pelo Ministério da Fazenda e disponibilizado ao público no arquivo `2018-01-09-Planilha-de-enquadramento-dos-Fundos-DIINV-CGACI-SRPPS-2.xlsx` por intermédio de sua página na internet.
+
+A análise realizada evidenciou a existência de `r length(divergencia_classificacao)` RPPS que apresentaram enquadramento de Fundos de Investimento divergente do apresentado pelo Ministério da Fazenda.
+
+As divergências de classificação detectadas para cada ente serão apresentadas no Anexo 02 a este relatório.
+
+
+## 6.2 Observância aos Limites Estabelecidos na Resolução CMN nº 3.922/10 
+
+Neste tópico, o objetivo da análise consiste em verificar se o RPPS realizou aplicações em Fundos de Investimento em percentual superior aos permitidos na Resolução CMN nº 3.922/10. De acordo com o citado normativo, os limites permitidos (em percentual dos ativos garantidores do RPPS), para cada tipo de investimento, são os seguintes:
+
+
+```{r, results='asis'}
+limites$ATIVO <- gsub("o", "º", limites$ATIVO)
+limites$LIMITES <- paste(limites$LIMITE, "%", sep = "")
+
+#kable(limites[,c("ATIVO", "DESCR_ATIVO", "LIMITES")], caption="Tabela 5 - Limites da Resolução CMN nº 3.922/10")
+
+tab62.flxt <- theme_zebra(regulartable(limites[,c("ATIVO", "DESCR_ATIVO", "LIMITES")]))
+tab62.flxt <- width(tab62.flxt, j=1:3, width = c(0.9842, 3.3464, 0.62))
+tab62.flxt <- align(tab62.flxt, j=c(1, 2), align="left")
+
+```
+
+#### Tabela 06 - Limites da Resolução CMN nº 3.922/10
+
+`r tab62.flxt`
+
+A partir dos dados coletados nos DAIR dos RPPS, obteve-se o percentual aplicado em cada modalidade de fundo de investimento em cada mês e comparou-se com os percentuais autorizados na Resolução CMN nº 3.922/10.
+
+```{r, echo=FALSE}
+alocacao <- dados_dair %>%
+               group_by(ente, ano_mes, textoFundamentoLegal_pad) %>%
+               summarise(VLR_APLICADO  = sum(as.numeric(valorTotalAtual)),
+                         PERC_APLICADO = sum(as.numeric(pctTotalRecursosSPPS))) 
+
+
+# Teste: se somar por ente e mes tem que fechar sempre 100% ou algo proximo disso...
+# Impementar quando tiver tempo...
+
+# Fazer merge dos 'limites' com a 'alocacao' usando o código padronizado.
+alocacao <- merge(alocacao,
+                  limites[,c('padroniza', 'LIMITE')],
+                  by.x='textoFundamentoLegal_pad',
+                  by.y='padroniza',
+                  all.x=TRUE)
+
+# Criar uma coluna que sinalizará se o valor aplicado no mes supera o valor permitido...
+alocacao$TESTE <- ifelse(alocacao$PERC_APLICADO <= alocacao$LIMITE, 0, 1)
+
+# Filtrar para ver quem extrapolou os limites
+alocacao <- filter(alocacao, TESTE == 1)
+
+# Ordenar por ente,  bimestre e depois por tipo de ativo.
+alocacao <- arrange(alocacao, ente, textoFundamentoLegal_pad, ano_mes)
+
+# Mostrar resultado
+alocacao <- alocacao[,c("ente", "ano_mes", "textoFundamentoLegal_pad",  "VLR_APLICADO", "PERC_APLICADO", "LIMITE")]
+```
+
+Esta análise evidenciou que **`r length(unique(alocacao$ente))`** RPPS realizaram investimento em valores superiores ao permitido pela Resolução CMN nº 3.922/10. 
+
+O Anexo 02 evidencia a situação específica de cada RPPS.
+
+
+## 6.3 Aplicações em FI de valor superior a 25% do patrimônio líquido dos mesmos.
+
+```{r, echo=FALSE}
+
+dados_dair$limite_pl <- 0.25 * as.numeric(dados_dair$valorAtualPatrimonioLiquidoFundo)
+
+dados_dair$supera_limite <- ifelse(as.numeric(dados_dair$valorTotalAtual) > dados_dair$limite_pl, 1, 0)
+
+aplicacao_superior_pl <- subset(dados_dair,
+                                supera_limite == 1,
+                                select=c("ente", "ano_mes", "identificacaoDoAtivo", "valorTotalAtual", "pctPatrimonioLiquidoFundo", "limite_pl", "supera_limite"))
+
+# Entes com aplicações acima do permitido
+entes_supera_pl <- sort(unique(aplicacao_superior_pl$ente))
+
+```
+
+
+A partir dos dados mencionados no item anterior, foi possível também verificar quais RPPS possuiam recursos investidos em FI em valor superior ao limite de 25% do patrimônio líquido do fundo.
+
+Os entes em cujos RPPS foram identificados esta situação são os seguintes: `r lista_municipios(stringr::str_to_title(entes_supera_pl))`.
+
+## 6.4 Aplicações vedadas
+
+Recentemente o Ministério da Fazenda passou a divulgar relação de fundos de investimentos nos quais o investimento estaria vedada aos RPPS.
+
+Esta análise não estava inicialmente planejada. Não obstante, parece oportuno requisitar aos RPPS que fizeram investimento em tais fundos que regularizem ou apresentem as devidas justificativas para os investimentos realizados.
+
+A lista divulgada em 07/02/18 (`Evidências.pdf, fls.xx`) evidencia os seguintes RPPS com investimentos em fundos vedados:
+
+* São José de Ubá
+* Itaocara
+* Itaboraí
+* Porciúncula

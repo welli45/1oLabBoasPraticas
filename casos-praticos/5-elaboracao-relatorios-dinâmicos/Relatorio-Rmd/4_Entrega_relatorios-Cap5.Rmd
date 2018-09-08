@@ -1,0 +1,194 @@
+# 5. Entrega de Relatórios ao Ministério da Fazenda
+
+```{r, echo=FALSE}
+setwd(diretorio_dados)
+controle_dair <- read_excel("Controle_download_MTPS.xlsx", sheet="DAIR")
+controle_draa <- read_excel("Controle_download_MTPS.xlsx", sheet="DRAA")
+controle_dpin <- read_excel("Controle_download_MTPS.xlsx", sheet="DPIN")
+controle_dipr <- read_excel("Controle_download_MTPS.xlsx", sheet="DIPR")
+```
+
+Por força do disposto na Portaria nº 204/08, os RPPS devem encaminhar ao Ministério da Fazenda, como condição para emissão do CRP, dentre outros, os seguintes demonstrativos: 
+
+* DRAA (art. 5º, inciso XVI, alínea 'b');
+* DAIR (art. 5º, inciso XVI, alínea 'd');
+* DPIN (art. 5º, inciso XVI, alínea 'g');
+* DIPR (art. 5º, inciso XVI, alínea 'h')  
+
+O objetivo deste capítulo é verificar o cumprimento desta obrigação pelos RPPS. Esta avaliação é importante em razão do regular encaminhamento dos citados demonstrativos ao Ministério da Previdência constituir uma forma de os RPPS darem transparência à sua gestão, já que uma vez encaminhados estes ficam acessíveis à população por intermédio do CadPrev Web (`http://cadprev.previdencia.gov.br`) 
+
+Os prazos de encaminhamento dos demonstrativos acima estão definidos nos incisos I e II do § 6º do art. 5º da Portaria nº 204/08 e são os seguintes:
+
+```{r}
+tab51 <- tribble(
+ ~DEMONSTRATIVO, ~`PRAZO DE ENVIO`,
+ "DRAA", "até 31 de março de cada exercício",
+ "DAIR", "até o último dia de cada mês, relativamente às informações das aplicações do mês anterior",
+ "DIPR", "até o último dia do mês seguinte ao encerramento de cada bimestre do ano civil",
+ "DPIN", "até 31 de outubro de cada exercício em relação ao exercício seguinte"
+)
+
+tab51.flxt <- theme_vanilla(regulartable(tab51))
+
+def_alin_tab51_esq    <- fp_par(text.align = "left")
+def_alin_tab51_centro <- fp_par(text.align = "left")
+
+tab51.flxt <- style(tab51.flxt, j=1,
+                    pr_p = def_alin_tab51_centro, part = "all")
+
+tab51.flxt <- style(tab51.flxt, j=2,
+                    pr_p = def_alin_tab51_esq, part = "all")
+tab51.flxt <- width(tab51.flxt, j = c(1,2), width=c(1.9685, 3.9370))
+```
+
+#### Tabela 04 - Prazo de encaminhamento dos demonstrativos ao Ministério da Fazenda
+
+`r tab51.flxt`
+
+Foi verificado o encaminhamento de tais documentos nos exercícios de 2015, 2016 e de janeiro a agosto de 2017. O DRAA e o DPIN são de encaminhamento anual. O DIPR é de encaminhamento bimestral e o DAIR passou a ser de encaminhamento mensal a partir de 2017. 
+
+Cabe destacar que com o advento da Portaria MF nº 01 de 03.01.17 (que altera a Portaria nº 204/08), a elaboração do DAIR, que era bimestral, passou a ser mensal com alteração no conteúdo do demonstrativo.  
+
+Destaca-se também a edição da Resolução CMN nº 4.604/17, publicada em 20.10.17, que altera a Resolução CMN nº 3.922/10 que normatiza as aplicações dos recursos financeiros pelas Unidades Gestoras dos RPPS, promovendo significativas alterações na mesma, em especial a modificação de nomenclatura, classificação e limites dos investimentos realizados nos segmentos de renda fixa, renda variável e nos fundos estruturados.
+
+De acordo com o artigo 21 da Resolução nº 4.604/17, as Unidades Gestoras tem o prazo de 180 dias para promover os ajustes necessários em sua carteira de investimentos de modo que os ativos que a integram passem a observar os novos limites estabelecidos pela Resolução.
+
+
+## 5.1 DRAA - Demonstrativo de Resultados da Avaliação Atuarial
+
+```{r, echo=FALSE}
+## substituir tudo isso por um simples source ao arquivo 'entregas_relatorios.R'
+
+# Filtrar os municípios com pendências
+colunas_draa <- grep("\\d{4}", names(controle_draa), value=TRUE) 
+flag_draa <- apply(controle_draa[, colunas_draa], 1, function(x) any(x == "NA"))
+pendencia_draa <- subset(controle_draa, flag_draa)
+
+# Calcular a quantidade de não entregas
+pendencia_draa$QTD_PENDENCIAS <- apply(pendencia_draa[, colunas_draa], 1, function(x) sum(ifelse(x == 'NA', 1, 0), na.rm=TRUE))
+
+# Quantidade de pendencias
+qtd_pendencias <- table(pendencia_draa$QTD_PENDENCIAS)
+
+# Juntar anos não entregues
+nomes <- names(pendencia_draa[,colunas_draa]) 
+pendencia_draa$ANOS <- apply(pendencia_draa[,colunas_draa], 1, function(x) paste0(nomes[x == 'NA' & !is.na(x)], collapse = ' | '))
+
+# Ordenar por quantidade de não entregas
+pendencia_draa <- arrange(pendencia_draa, desc(QTD_PENDENCIAS))
+
+```
+
+Em consulta realizada ao CadPrev Web no período de `r format(min(controle_draa$DtConsulta), "%d de %B de %Y")` a `r format(max(controle_draa$DtConsulta), "%d de %B de %Y") ` foram identificados `r nrow(pendencia_draa)` RPPS com pendência no encaminhamento do DRAA ao Ministério da Fazenda.
+
+Desses, `r unname(qtd_pendencias["3"])` não encaminharam os DRAA relativos aos três exercícios consultados. São eles: `r lista_municipios(sort(pendencia_draa$Municipio[pendencia_draa$QTD_PENDENCIAS == 3]))`.
+
+Não encaminharam os DRAA relativos a dois exercícios `r unname(qtd_pendencias["2"])` entes: `r lista_municipios(sort(pendencia_draa$Municipio[pendencia_draa$QTD_PENDENCIAS == 2]))`.
+
+Os demais `r unname(qtd_pendencias["1"])` entes não encaminharam o DRAA relativo ao exercício de 2017. São eles: `r lista_municipios(sort(pendencia_draa$Municipio[pendencia_draa$QTD_PENDENCIAS == 1]))`
+
+No Anexo 02 serão identificados para cada RPPS os exercícios para os quais foram identificadas pendências de encaminhamento.
+
+
+## 5.2 DAIR - Demonstrativo de Aplicação e Investimento de Recursos
+
+```{r, echo=FALSE}
+# Filtrar municipios com pendências
+colunas_dair <- grep("\\d{4}.?(B[1-6]|\\d{2})", names(controle_dair), value=TRUE) 
+flag_dair <- apply(controle_dair[, colunas_dair], 1, function(x) any(x == "NA"))
+pendencia_dair <- subset(controle_dair, flag_dair)
+
+# Calcular a quantidade de não entregas
+pendencia_dair$QTD_PENDENCIAS <- apply(pendencia_dair[, colunas_dair], 1, function(x) sum(ifelse(x == "NA", 1, 0), na.rm=TRUE))
+
+# Quantidade de pendências - acho que isso é desnecessário...
+#qtd_pendencias_dair <- table(pendencia_dair$QTD_PENDENCIAS)
+
+# Juntar bimestres não entregues
+nomes <- names(pendencia_dair[,colunas_dair]) 
+pendencia_dair$BIMESTRES <- apply(pendencia_dair[,colunas_dair], 1,
+                                  function(x) paste0(nomes[x == "NA"], collapse = ' | '))
+
+# Ordenar por quantidade de não entregas
+pendencia_dair <- arrange(pendencia_dair, desc(QTD_PENDENCIAS))
+```
+
+No período de janeiro de 2015 a outubro de 2017 foram identificados  `r nrow(pendencia_dair)` RPPS com pendências no encaminhamento deste relatório à Subsecretaria de Previdência do Ministério da Fazenda. A consulta ao site do Ministério deu-se entre os dias `r format(min(controle_dair$DtConsulta), "%d de %B de %Y")` e `r format(max(controle_dair$DtConsulta), "%d de %B de %Y")`.
+
+No Anexo 02 serão idenficados os períodos em que cada RPPS deixou de encaminhar o relatório à Subsecretaria de Previdência do Ministério da Fazenda. 
+
+
+## 5.3 DIPR - Demonstrativo de Informações Previdenciárias e Repasses
+
+```{r, echo=FALSE}
+
+# Filtrar municipios com pendências
+colunas_dipr <- grep("\\d{4}.?B[1-6]", names(controle_dipr), value = TRUE)
+flag_dipr <- apply(controle_dipr[, colunas_dipr], 1, function(x)any(x=="NA")) #
+pendencia_dipr <- subset(controle_dipr, flag_dipr)
+
+# Calcular a quantidade de não entregas
+pendencia_dipr$QTD_PENDENCIAS <- apply(pendencia_dipr[,colunas_dipr], 1, function(x) sum(ifelse(x=="NA", 1, 0)))
+
+# Juntar bimestres não entregues
+nomes <- names(pendencia_dipr[,colunas_dipr]) # excluir colunas com NA
+pendencia_dipr$BIMESTRES <- apply(pendencia_dipr[,colunas_dipr], 1, function(x) paste0(nomes[x == 'NA'], collapse = ' | '))
+
+# Ordenar por quantidade de não entregas
+pendencia_dipr <- arrange(pendencia_dipr, desc(QTD_PENDENCIAS))
+```
+
+No período de janeiro de 2015 a outubro de 2017, foram identificados `r nrow(pendencia_dipr)` RPPS com pendências de encaminhamento deste relatório à Subsecretaria de Previdência do Ministério da Fazenda. A consulta ao _site_ do Ministério deu-se entre os dias `r format(min(controle_dipr$DtConsulta), "%d de %B de %Y")` e `r format(max(controle_dipr$DtConsulta), "%d de %B de %Y")`.
+
+No Anexo 02 serão idenficados os períodos em que cada RPPS deixou de encaminhar o relatório à Subsecretaria de Previdência do Ministério da Fazenda. 
+
+
+## 5.4 DPIN - Demonstrativo da Política de Investimentos
+
+```{r, echo=FALSE}
+# Filtrar os municípios com pendências
+colunas_dpin <- grep("^DPIN", names(controle_dpin), value=TRUE) 
+
+flag_dpin <- apply(controle_dpin[, colunas_dpin], 1, function(x) any(x == "NA"))
+
+pendencia_dpin <- subset(controle_dpin, flag_dpin)
+
+# Calcular a quantidade de não entregas
+pendencia_dpin$QTD_PENDENCIAS <- apply(pendencia_dpin[, colunas_dpin], 1, function(x) sum(ifelse(x == 'NA', 1, 0), na.rm=TRUE))
+
+# Quantidade de pendencias
+qtd_pendencias_dpin <- table(pendencia_dpin$QTD_PENDENCIAS)
+
+# Juntar anos não entregues
+nomes <- names(pendencia_dpin[,colunas_dpin]) 
+pendencia_dpin$ANOS <- apply(pendencia_dpin[,colunas_dpin], 1, function(x) paste0(nomes[x == 'NA' & !is.na(x)], collapse = ' | '))
+
+# Excluir texto "DtEnvio"
+pendencia_dpin$ANOS <- gsub("DPIN", "", pendencia_dpin$ANOS)
+
+# Ordenar por quantidade de não entregas
+pendencia_dpin <- arrange(pendencia_dpin, desc(QTD_PENDENCIAS))
+
+# Quantidade de Municípios com pendência
+tab_pendencias_ano <- pendencia_dpin %>%
+                        group_by(ANOS) %>%
+                        summarise(QTD_ENTES_COM_PENDENCIAS = n()) %>%
+                        arrange(desc(QTD_ENTES_COM_PENDENCIAS))
+
+```
+
+Em consulta realizada ao CadPrev Web no período de `r format(min(controle_dpin$DtConsulta), "%d de %B de %Y")` a `r format(max(controle_dpin$DtConsulta), "%d de %B de %Y")` foram identificados `r nrow(pendencia_dpin)` RPPS com pendência no encaminhamento do DPIN ao Ministério da Fazenda.
+
+A tabela a seguir mostra os anos em que existem pendências de encaminhamento do DPIN e a quantidade de entes com pendências. 
+
+```{r}
+tab54.flxt <- theme_zebra(regulartable(tab_pendencias_ano))
+tab54.flxt <- align(tab54.flxt, j=1, align = "left")
+```
+
+#### Tabela 05 - Quantidade de entes e anos com pendência de encaminhamento do DPIN
+
+`r autofit(tab54.flxt)`
+
+No Anexo 02 serão identificados, para cada RPPS, os exercícios para os quais foram identificadas pendências de encaminhamento do DPIN.
+

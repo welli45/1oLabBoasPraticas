@@ -1,0 +1,111 @@
+---
+title: "Controle Entrega Arquivos XML"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+
+
+```{r setup, include=FALSE, echo=FALSE}
+
+library(flexdashboard)
+library(knitr)
+library(kableExtra)
+
+funcoes <- c("diprExtraiID.R",
+             "dairExtraiID.R",
+             "diprGeraBaseID.R",
+             "dairGeraBaseID.R",
+             "diprGeraQuadroEntrega.R",
+             "dairGeraQuadroEntrega.R",
+             "geraRelacaoEntes.R")
+
+invisible(lapply(funcoes, source)) # Carrega as funções.
+
+# Define os diretórios onde estão os arquivos xml do DIPR
+dir_base <- "I:\\Melhores Praticas TCE e Atricon\\ATRICON\\3. Parte Pratica - Laboratorio\\6-base-xml"
+
+# DAIR
+dir.xml_dair2017 <- paste(dir_base, "Base_DAIR_2017", sep = "\\")
+dir.xml_dair2018 <- paste(dir_base, "Base_DAIR_2018", sep = "\\")
+
+# DIPR
+dir.xml_dipr2017 <- paste(dir_base, "Base_DIPR_2017", sep = "\\")
+dir.xml_dipr2018 <- paste(dir_base, "Base_DIPR_2018", sep = "\\")
+```
+
+DAIR {.tabset .tabset-fade}
+===================================
+
+
+DAIR {.tabset .tabset-fade}
+------------------------------------
+### 2017
+    
+```{r}
+
+setwd(dir.xml_dair2017)
+dados1 <- dairGeraQuadroEntrega(dir.xml = dir.xml_dair2017, ano=2017)
+
+#kable(dados1)  
+DT::datatable(dados1,
+              rownames = FALSE,
+              caption=paste("Posição em: ", Sys.Date(), sep = ""),
+              options = list(columnDefs = list(list(className = 'dt-center', targets = "_all"))))
+
+
+```
+    
+
+### 2018
+
+```{r}
+
+setwd(dir.xml_dair2018)
+dados2 <- dairGeraQuadroEntrega(dir.xml = dir.xml_dair2018, ano=2018)
+
+#kable(dados2) 
+DT::datatable(dados2,
+              rownames = FALSE,
+              caption=paste("Posição em: ", Sys.Date(), sep = ""),
+              options = list(columnDefs = list(list(className = 'dt-center', targets = "_all"))))
+
+```
+   
+
+DIPR {.tabset .tabset-fade}
+====================================
+
+DIPR {.tabset .tabset-fade}
+-------------------------------------
+### 2017
+
+
+```{r}
+
+setwd(dir.xml_dipr2017)
+dados3 <- diprGeraQuadroEntrega(dir.xml = dir.xml_dipr2017, ano=2017)
+
+#kable(dados3)  
+DT::datatable(dados3,
+              rownames = FALSE,
+              caption=paste("Posição em: ", Sys.Date(), sep = ""),
+              options = list(columnDefs = list(list(className = 'dt-center', targets = "_all"))))
+
+```
+
+### 2018
+
+```{r}
+
+setwd(dir.xml_dipr2018)
+dados4 <- diprGeraQuadroEntrega(dir.xml = dir.xml_dipr2018, ano=2018)
+
+#kable(dados4)
+DT::datatable(dados4,
+              rownames = FALSE,
+              caption=paste("Posição em: ", Sys.Date(), sep = ""),
+              options = list(columnDefs = list(list(className = 'dt-center', targets = "_all"))))
+
+
+```

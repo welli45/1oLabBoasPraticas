@@ -1,0 +1,17 @@
+# Anexo 03 - Controle de Encaminhamento de Arquivos Posição em 31/01/2017
+
+```{r, echo=FALSE, results='asis'}
+setwd(diretorio_funcoes_aux)
+
+source("funcoes_auxiliares_controle_entrega.R")
+
+setwd(diretorio_xml_dair)
+controle <- gera_controle_entrega_dair(diretorio_xml_dair, plan.munic = "F:\\CTO\\_RPPS\\shiny-apps\\rpps-app\\dados\\cnpj_municipios.xlsx")
+
+controle.flxt <- regulartable(controle)
+controle.flxt <- width(controle.flxt, j=1, width = 1.1811)
+
+```
+
+`r autofit(controle.flxt)`
+

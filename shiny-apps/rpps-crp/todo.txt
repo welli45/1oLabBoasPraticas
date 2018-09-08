@@ -1,0 +1,11 @@
+﻿https://marcosfs2006.shinyapps.io/rpps-crp/
+
+todo list:
+- Incluir um botão para realizar o download dos dados.
+- Incluir um checkbox caso se deseje comparar dois periodos.
+- Incluir tabela com itens irregulares e itens com decisao judicial.
+
+
+- [ok. implementado]Implementar a identificacao de entes com problemas (irregulares) em cada um dos criterios do extrato previdenciario.
+
+

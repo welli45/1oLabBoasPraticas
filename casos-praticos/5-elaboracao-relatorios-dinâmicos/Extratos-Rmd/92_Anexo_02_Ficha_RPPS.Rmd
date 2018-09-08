@@ -1,0 +1,272 @@
+---
+title: FICHA DE APURAÇÃO DE INCONSISTÊNCIAS - RPPS 
+output:
+  word_document:
+    reference_docx: Template_Anexo2.docx
+---
+
+```{r setup, echo=FALSE}
+options(warn = -1, width=120)
+knitr::opts_chunk$set(comment = NA, echo = FALSE)
+```
+
+ENTE: **`r k`**   
+CNPJ: **`r formata_cnpj(subset(entes, MUNICIPIO == k)$CNPJ)`** 
+
+# 1. Certificado de Regularidade Previdenciária - CRP
+
+Data de Consulta do CRP: **`r comment(crp)`**
+
+Nº CRP: **`r as.character(subset(crp, Municipio == k)$CRP)`**
+
+Data de Emissão: **`r format.Date(subset(crp, Municipio == k)$DtEmissao, "%d/%m/%Y")`**
+
+Data de Validade: **`r format.Date(subset(crp, Municipio == k)$DtValidade, "%d/%m/%Y")`**
+
+Status: **`r indica_status_crp(subset(crp, Municipio == k)$dias)`**   
+
+```{r}
+# Se o CRP é válido, em quais critérios está irregular ou com com decisão judicial
+tab_irreg  <- gera_tab_irreg(k)
+tab_decjud <- gera_tab_decjud(k)
+dias <- subset(crp, Municipio == k)$dias
+if(is.na(dias)) dias <- 0
+```
+
+```{r, results='asis'}
+# A tabela deve ser apresentada apenas para CRP válido (dias > 0) e não seja vetor de string nulo.
+#if(dias > 0 & is.data.frame(tab_irreg)){
+#  kable(tab_irreg)
+#} else if(dias > 0 & !is.data.frame(tab_irreg)){
+#  cat("Critérios Irregulares: **NÃO HÁ**")
+#}
+
+if(is.data.frame(tab_irreg)){
+  kable(tab_irreg)
+} else if(dias > 0 & !is.data.frame(tab_irreg)) {
+  cat("Critérios Irregulares: **NÃO HÁ**")
+} 
+
+
+```
+
+```{r, results='asis'}
+#if(dias > 0 & is.data.frame(tab_decjud)){
+#  kable(tab_decjud)
+#} else if(dias > 0 & !is.data.frame(tab_decjud)){
+#  cat("Critérios com Decisão Judicial: **NÃO HÁ**")
+#}
+
+if(is.data.frame(tab_decjud)){
+  kable(tab_decjud)
+} else if(dias > 0 & !is.data.frame(tab_decjud)) {
+  cat("Critérios com Decisão Judicial: **NÃO HÁ**")
+}
+
+```
+
+<br>
+
+# 2. Entrega de Documentos ao Ministério da Fazenda
+
+## 2.1 DRAA
+
+```{r, results='asis'}
+pendencias_draa <- gera_pendencias_draa(k, entrega_draa)
+
+if(pendencias_draa[['Anos_Pendencia']] == "") {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**", pendencias_draa[['DtConsulta']],"**", "\n", sep = "")
+  cat("\n")
+  cat("Exercícios com pendências: **SEM PENDÊNCIAS**")
+
+} else {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**", pendencias_draa[["DtConsulta"]],"**", "\n", sep = "")
+  cat("\n")
+  cat("Exercícios com pendências: ", "**",pendencias_draa[["Anos_Pendencia"]],"**", sep = "") 
+}
+```
+
+
+## 2.2 DAIR
+
+```{r, results='asis'}
+pendencias_dair <- gera_pendencias_dair(k, entrega_dair)
+
+if(pendencias_dair[['Anos_Pendencia']] == "") {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**", pendencias_dair[['DtConsulta']],"**", "\n", sep = "")
+  cat("\n")
+  cat("Exercícios com pendências: **SEM PENDÊNCIAS**")
+
+} else {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**", pendencias_dair[["DtConsulta"]],"**", "\n", sep = "")
+  cat("\n")
+  cat("Períodos com pendências: ", "**", pendencias_dair[["Anos_Pendencia"]],"**", sep = "")  
+
+}
+
+```
+
+
+## 2.3 DIPR
+
+```{r, results='asis'}
+pendencias_dipr <- gera_pendencias_dipr(k, entrega_dipr)
+
+if(pendencias_dipr[['Anos_Pendencia']] == "") {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**",pendencias_dipr[['DtConsulta']],"**", " \n", sep = "")
+  cat("\n")
+  cat("Exercícios com pendências: **SEM PENDÊNCIAS**")
+
+} else {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**", pendencias_dipr[["DtConsulta"]],"**", " \n", sep = "")
+  cat("\n")
+  cat("Períodos com pendências: ", "**", pendencias_dipr[["Anos_Pendencia"]],"**", sep = "")  
+
+}
+
+```
+
+
+## 2.4 DPIN
+
+```{r, results='asis'}
+pendencias_dpin <- gera_pendencias_dpin(k, entrega_dpin)
+
+if(pendencias_dpin[['Anos_Pendencia']] == "") {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**",pendencias_dpin[['DtConsulta']],"**", " \n", sep = "")
+  cat("\n")
+  cat("Exercícios com pendências: **SEM PENDÊNCIAS**")
+
+} else {
+
+  cat("Data da Consulta ao CadPrev Web: ", "**", pendencias_dpin[["DtConsulta"]],"**", " \n", sep = "")
+  cat("\n")
+  cat("Períodos com pendências: ", "**", pendencias_dpin[["Anos_Pendencia"]],"**", sep = "")  
+
+}
+
+```
+
+</br>
+
+# 3. Análise do DAIR
+
+```{r, results='asis'}
+# Este chunk identifica a situação do ente quanto o encaminhamento dos arquivos xml solicitados.
+periodo_solicitado <- c("2017-1", "2017-2", "2017-3", "2017-4", "2017-5", "2017-6", "2017-7", "2017-8")
+encaminhamento_xmldair <- identifica_encaminhamento_xmldair(k, dair2, periodo=periodo_solicitado)
+
+if(encaminhamento_xmldair[["Status"]] == 0){
+  cat("Entrega das Bases de Dados Solicitadas: **NÃO ENTREGUES**")
+} else if(encaminhamento_xmldair[["Status"]] == 1){
+  cat("Entrega das Bases de Dados Solicitadas: **ENTREGUES INTEGRALMENTE**")
+} else if(encaminhamento_xmldair[["Status"]] == 2){
+  cat("Entrega das Bases de Dados Solicitadas: **ENTREGUES PARCIALMENTE**")
+}
+
+```
+
+## 3.1 Enquadramento dos Fundos de Investimento
+
+```{r, results='asis'}
+# Este chunk imprime um quadro com as divergências de enquadramento dos fundos de investimento entre o Ministério da Fazenda e o RPPS  
+divergencias_enquadramento <- encontra_divergencia_enquadramento(k, dair2)
+
+if(encaminhamento_xmldair[["Status"]] == 0){
+  cat("\n")
+  cat("Divergências de Enquadramento: **VERIFICAÇÃO IMPOSSIBILITADA POR FALTA DE ENCAMINHAMENTO DOS DADOS REQUISITADOS**")
+
+} else if(nrow(divergencias_enquadramento[["Divergencia"]]) == 0){
+  cat("\n")
+  cat("Divergências de Enquadramento: **NÃO IDENTIFICADAS**")
+
+} else {
+  cat("\n")
+  cat("Divergências de Enquadramento:")
+  kable(divergencias_enquadramento[["Divergencia"]], row.names = FALSE, col.names = c("Ativo", "Tipo", "Enquadramento RPPS", "Enquadramento do MF"))
+}
+
+```
+
+## 3.2 - Limites da Resolução CMN nº 3.922/10
+
+```{r, eval=FALSE}
+# Este chunk faz o gráfico da verificação do enquadramento apenas para os entes que encaminharam os arquivos para todo o período solicitado. 
+
+if(encaminhamento_xmldair[["Status"]] == 1){ # Encaminhamento de todas as bases solicitadas.
+  plota_limites(munic = k, base = dair_tipo_ativo)  
+}
+
+# Plotar apenas os ativos para os quais existe restrição de aplicação. Está plotando tudo...
+```
+
+
+```{r, results='asis'}
+# Este chunk verifica se houve divergêncid de enquadramento entre 
+desenquadramentos <- identifica_desenquadramento(munic=k, base=dair_tipo_ativo)
+
+if(encaminhamento_xmldair[["Status"]] == 0){
+  cat("Violação de Limites: **VERIFICAÇÃO IMPOSSIBILITADA POR FALTA DE ENCAMINHAMENTO DOS DADOS REQUISITADOS**")
+} else if(desenquadramentos[["Status_Excesso"]] == 0){
+  cat("Violação de Limites: **NÃO HOUVE VIOLAÇÃO DE LIMITES NO PERÍODO**")
+} else if(desenquadramentos[["Status_Excesso"]] == 1){
+  cat("Violação de Limites:")
+  kable(desenquadramentos[["Periodo_Excesso"]], col.names = c("Mês", "Ativo", "Limite CMN (%)", "Aplicado (%)", "Excesso (%)"))
+}
+
+```
+
+
+## 3.3 - Aplicação em mais de 25% do PL do Fundo de Investimentos
+
+```{r, results='asis'}
+# Este chunk objetiva identificar se o RPPS aplicou em um fundo de investimento o correspondente a mais que 25% do Patrimonio Líquido do Fundo
+pl_fundo <- identifica_aplicacao_pl(k, dair )
+
+if(is.null(pl_fundo)){
+  cat("\n")
+  cat("Aplicacao superior a 25% do PL do Fundo: **VERIFICAÇÃO IMPOSSIBILITADA POR FALTA DE ENCAMINHAMENTO DOS DADOS REQUISITADOS**")
+} else if(nrow(pl_fundo) == 0){
+  cat("\n")
+  cat("Aplicação superior a 25% do PL do Fundo: **NÃO IDENTIFICADO**")
+} else {
+  cat("\n")
+  kable(pl_fundo, row.names = FALSE, col.names = c("Período", "Ativo", "Valor Aplicado", "% PL Fundo", "25% PL Fundo"))
+}
+
+```
+
+</br>
+
+# 4. Atendimento ao Termo de Solicitação de Informações ou Documentos (TSID)
+
+## Arquivos xml DAIR (Janeiro a Agosto de 2017)
+
+```{r, results='asis'}
+enc_dair <- identifica_encaminhamento_xmldair(k, dair2, periodo=periodo_solicitado)
+
+if(enc_dair[["Status"]] == 0){
+  cat("\n")
+  cat("Períodos Encaminhados: **NÃO ENCAMINHOU NENHUM ARQUIVO DO PERÍODO SOLICITADO**")
+} else if(enc_dair[["Status"]] == 1){
+  cat("\n")
+  cat("Períodos Encaminhados: **ENCAMINHOU TODOS OS ARQUIVOS DO PERÍODO SOLICITADO**")
+} else{
+  cat("\n")
+  cat("Períodos Encaminhados: **ENCAMINHOU PARTE DOS ARQUIVOS DO PERÍODO SOLICITADO**")
+  #cat("\n")
+  #enc_dair[['Periodo_Encaminhado']]
+}
+```
+
+
+
+
+

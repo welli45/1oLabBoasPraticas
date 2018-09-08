@@ -1,0 +1,80 @@
+# 3. Metodologia
+
+O presente relatório trata, basicamente, de três aspectos relacionados à gestão dos RPPS:
+
+* Situação do ente em relação ao CRP;
+* Encaminhamento de documentos ao Ministério da Previdência;
+* Análise dos dados do DAIR, com relação a:
+    + Enquadramento dos fundos de investimento;
+    + Observância dos limites estabelecidos na Resolução CMN nº 3.922/10.
+
+Em linhas gerais, a dinâmica da auditoria está sintetizada na figura a seguir:
+
+![Figura 2 - Workflow de elaboração do relatório.](../figuras/Origem dos dados2.png)
+
+Em **Fontes de Dados**, estão relacionadas as fontes dos dados utilizados na produção deste relatório. Essencialmente, os dados são oriundos de 4 fontes:
+
+* 1. Uma planilha contendo dados do encaminhamento de relatórios (DRAA, DAIR e DIPR) ao Ministério da Fazenda (planilha `Controle_download_MTPS.xlsx`);
+* 2. Arquivos xml relativos ao DAIR;
+* 3. Planilha contendo o enquadramento de Fundos de Investimento (planilha `2018-01-09-Planilha-de-enquadramento-dos-Fundos-DIINV-CGACI-SRPPS-2.xlsx`) e;
+* 4. Página do Ministério da Fazenda (<http://www1.previdencia.gov.br/sps/app/crp/crppesquisaente.asp>) da qual os dados do extrato previdenciário foram extraídos.
+
+Em **Processamento e Análise dos Dados** evidencia-se a ferramenta utilizada para realizar a preparação e análise dos dados obtidos. Foi utilizado o [software R](https://www.r-project.org/) para produzir os *scripts* utilizados no processamento dos arquivos xml do DAIR, para extração dos dados do extrato previdenciário, etc. 
+
+Em **Elaboração do Relatório** evidencia-se o uso do [RMarkdown](https://rmarkdown.rstudio.com/) como ferramenta que possibilitou a automatização da elaboração do relatório. 
+
+Durante o período de execução da auditoria, além da elaboração dos *scripts* para a extração e análise de dados, deu-se início à elaboração de uma aplicação para auxiliar no controle dos RPPS. As figuras a seguir ilustram alguns módulos da referida aplicação:
+
+![Figura 3 - Módulo CRP do aplicativo.](../figuras/shiny_1.png)
+
+Este módulo do aplicativo (**CRP**) tem por objetivo permitir o acompanhamento da situação do Ente em relação ao CRP. Os dados são extraídos da internet por intermédio de um *script* e o objetivo é realizar extrações periódicas de dados do *site* do Ministério da Fazenda com vistas ao acompanhamento da situação dos RPPS. 
+
+
+![Figura 4 - Módulo DAIR do aplicativo.](../figuras/shiny_2.png)
+
+Este módulo (**DAIR**) tem por objetivo permitir o acompanhamento dos investimentos realizados pelos RPPS. Em especial, o aplicativo possibilita identificar se os investimentos estão dentro dos limites impostos pela Resolução CMN nº 3922/10. Outra análise que o aplicativo possibilita é quanto à adequação do enquadramento dos investimentos. 
+
+Para o exercício de 2017 os dados são oriundos de arquivos xml que foram requisitados aos RPPS. Os dados de exercícios anteriores (2015 e 2016) foram extraídos de arquivos `pdf` baixados do Cadprev Web. Antes de 2017, os relatórios do DAIR eram elaborados bimestralmente.
+
+Destaca-se que no Capítulo 7 a análise realizada restringe-se ao período de janeiro a agosto de 2017, período para o qual os arquivos xml foram requisitados aos RPPS.
+
+![Figura 5 - Módulo XML do aplicativo.](../figuras/shiny_3.png)
+
+Este módulo do aplicativo (**XML**) tem por objetivo realizar o controle do encaminhamento dos arquivos xml requisitados durante a auditoria. 
+
+![Figura 6 - Módulo Cadastro RPPS do aplicativo.](../figuras/shiny_4.png)
+
+Este módulo (**Cadastro RPPS**) tem por objetivo extrair dos arquivos xml do DAIR dados cadastrais dos RPPS atualizados tais como nome e CNPJ do ente, nome do RPPS, natureza jurídica da unidade gestora do RPPS, endereço, email, telefone, etc.
+
+
+## 3.1 Obtenção dos dados
+
+A **Figura 2** apresenta as 4 fontes de dados utilizadas para a elaboração do relatório.  
+
+A primeira fonte de dados é a planilha `Controle_download_MTPS.xlsx` que é alimentada periodicamente, de forma manual, com dados obtidos de consultas realizadas ao CadPrev Web. Especificamente, verifica-se para cada ente se o DRAA, DAIR, DIPR e DPIN foram regularmente encaminhados nos prazos devidos.    
+
+A segunda fonte de dados, os arquivos xml dos DAIR, foram obtidos por intermédio de requisição aos RPPS jurisdicionados via Termo de Solicitação de Documentos e/ou Informações. Destaca-se que nem todos os RPPS encaminharam os arquivos solicitados. O Anexo 03 apresenta a relação dos entes indicando quais atenderam a solicitação e quais não.  
+
+A terceira fonte de dados é a planilha contendo o enquadramento dos Fundos de Investimento. Esta planilha foi baixada do site do Ministério da Fazenda e contém informações relativas ao enquadramento dos Fundos de Investimento nos quais os RPPS de todo o Brasil possuem recursos aplicados.
+
+Já os dados do extrato previdenciário foram extraídos do site do Ministério da Fazenda de forma automatizada utlizando *script* escrito no software R.
+
+
+## 3.2 Análises realizadas
+
+De posse dos dados a etapa seguinte foi realizar a análise dos mesmos, que em grande medida consistiu em implementar os cruzamentos e análises relacionadas às questões de auditoria tratadas neste trabalho. 
+
+
+## 3.3 Elaboração do relatório
+
+O relatório foi produzido utilizando o software R, em especial os recursos disponíveis para a elaboração de relatórios dinâmicos (*Dinamic Reporting*), ou seja, a elaboração de relatórios nos quais os resultados de análises realizadas no R são automaticamente incorporados ao relatório, incluindo gráficos e tabelas.
+
+A adoção desta metodologia permitiu a elaboração de análises personalizadas para cada RPPS apresentadas no Anexo 02 deste relatório.
+
+Basicamente esta etapa consiste na elaboração do conteúdo textual em rmarkdown, o que possibilita que instruções em R para a importação e análise dos dados  possam ser executadas e o resultado incorporado ao relatóirio.
+
+
+
+
+
+

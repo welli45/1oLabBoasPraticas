@@ -1,0 +1,19 @@
+﻿**CADPREV** - Sistema de Informações dos Regimes Públicos de Previdência Social  
+**CGM** - Coordenadoria de Contas de Governo dos Municípios  
+**CMG** - Coordenadoria Municipal de Auditoria Governamental  
+**CMN** - Conselho Monetário Nacional  
+**CRP** - Certificado de Regularidade Previdenciária  
+**CTO** - Coordenadoria de Auditorias Temáticas e Operacionais  
+**DAIR** - Demonstrativo de Aplicação e Investimento de Recursos  
+**DIPR** - Demonstrativo de Informações Previdenciárias e Repasses  
+**DPIN** - Demonstrativo da Política de Investimentos  
+**DRAA** - Demonstrativo de Resultados da Avaliação Atuarial  
+**PAAG** - Plano Anual de Auditoria Governamental  
+**RGPS** - Regime Geral de Previdência Social  
+**RPPS** - Regime Próprio de Previdência Social   
+**SPREV** - Secretaria de Previdência do Ministério da Fazenda       
+**SRRPS** - Subsecretaria dos Regimes Próprios de Previdência Social       
+**SGE** - Secretaria Geral de Controle Externo     
+**XML** - _Extensible Markup Language_     
+**ISP** - Indicador de Situação Previdenciária     
+**PL** - Patrimônio Líquido   

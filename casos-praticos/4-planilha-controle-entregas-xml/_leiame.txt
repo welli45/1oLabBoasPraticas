@@ -1,0 +1,9 @@
+Este diretório destina-se a armazenar os scripts utilizados para dar suporte à auditoria
+de acompanhamento enquanto não for criado um pacote com as mesmas.
+
+A geração da planilha de controle de entregas está automatizada via agendamento.
+
+O agendamento é feito utilizando-se o pacote taskscheduleR. O nome da tarefa é "GeraControleXML"
+
+Diariamente é gerada uma nova planilha.
+
